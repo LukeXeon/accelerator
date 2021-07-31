@@ -6,7 +6,7 @@ option java_package = "open.source.accelerator.proto";
 option java_generate_equals_and_hash = true;
 package open.source.accelerator.proto;
 
-message PbChild{
+message PbChildContent{
   oneof value{
     PbRow row = 1;
     PbColumn column = 2;
@@ -22,15 +22,23 @@ message PbChild{
 //
 
 message PbRow{
-  PbPadding contentPadding = 2;
-  repeated PbChild children = 3;
+  repeated Child children = 3;
   google.protobuf.StringValue clickUrl = 4;
+  message Child{
+    google.protobuf.FloatValue weight = 1;
+    PbChildContent content = 2;
+    PbAlignment.Vertical align = 3;
+  }
 }
 
 message PbColumn{
-  PbPadding contentPadding = 2;
-  repeated PbChild children = 3;
+  repeated Child children = 3;
   google.protobuf.StringValue clickUrl = 4;
+  message Child{
+    google.protobuf.FloatValue weight = 1;
+    PbChildContent content = 2;
+    PbAlignment.Horizontal align = 3;
+  }
 }
 
 message PbText{
@@ -76,15 +84,26 @@ message PbImage{
 }
 
 message PbBox{
-  repeated PbChild children = 3;
+  repeated Child children = 3;
+  message Child{
+    PbChildContent content = 2;
+    google.protobuf.BoolValue matchParentSize = 1;
+    PbAlignment align = 3;
+  }
 }
 
 message PbFlow{
-  repeated PbChild children = 3;
+  repeated Child children = 3;
+  message Child{
+    PbChildContent content = 2;
+  }
 }
 
 message PbConstraint{
-  repeated PbChild children = 3;
+  repeated Child children = 3;
+  message Child{
+    PbChildContent content = 2;
+  }
 }
 
 message PbSpace{
@@ -92,6 +111,21 @@ message PbSpace{
 }
 
 //
+
+message PbAlignment{
+  Horizontal horizontal = 1;
+  Vertical vertical = 2;
+  enum Vertical{
+    Top = 0;
+    CenterVertically = 1;
+    Bottom = 2;
+  }
+  enum Horizontal{
+    Start = 0;
+    CenterHorizontally = 1;
+    End = 2;
+  }
+}
 
 message PbUiUnit{
   float value = 1;

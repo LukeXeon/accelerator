@@ -46,7 +46,7 @@ private fun BlendMode.toPorterDuffMode(): PorterDuff.Mode = when (this) {
 }
 
 @Composable
-fun MappingImage(descriptor: PbImage) {
+fun MappingImage(descriptor: PbImage, modifier: Modifier) {
     val view = AmbientView.current
     val loader = AmbientImageLoader.current
     val router = AmbientRouter.current
@@ -83,15 +83,17 @@ fun MappingImage(descriptor: PbImage) {
             val it = drawable
             if (it == null) DrawablePainter.Unspecified else DrawablePainter(it)
         },
-        modifier = Modifier.drawBehind {
+        modifier = modifier.drawBehind {
             if (isDirty) {
                 isDirty = false
             }
-        }.apply {
+        }.let {
             if (descriptor.hasClickUrl()) {
-                clickable {
+                it.clickable {
                     onClick(descriptor.clickUrl.value)
                 }
+            } else {
+                it
             }
         }
     )

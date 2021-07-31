@@ -82,7 +82,7 @@ private fun List<PbText.TextDecoration>.toTextDecoration(): TextDecoration? {
 }
 
 @Composable
-fun MappingText(descriptor: PbText) {
+fun MappingText(descriptor: PbText, modifier: Modifier) {
     val router = AmbientRouter.current
     val onClick = remember<(String) -> Unit>(router) { { router(it) } }
     Text(
