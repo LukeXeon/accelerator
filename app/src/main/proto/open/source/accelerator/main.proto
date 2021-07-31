@@ -1,0 +1,116 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+import "google/protobuf/wrappers.proto";
+option java_multiple_files = true;
+option java_package = "open.source.accelerator.proto";
+option java_generate_equals_and_hash = true;
+package open.source.accelerator.proto;
+
+message PbChild{
+  oneof value{
+    PbRow row = 1;
+    PbColumn column = 2;
+    PbText text = 3;
+    PbImage image = 4;
+    PbBox box = 5;
+    PbFlow flow = 6;
+    PbConstraint constraint = 7;
+    PbSpace space = 8;
+  }
+}
+
+//
+
+message PbRow{
+  PbPadding contentPadding = 2;
+  repeated PbChild children = 3;
+  google.protobuf.StringValue clickUrl = 4;
+}
+
+message PbColumn{
+  PbPadding contentPadding = 2;
+  repeated PbChild children = 3;
+  google.protobuf.StringValue clickUrl = 4;
+}
+
+message PbText{
+  string text = 1;
+  PbUiUnit textSize = 2;
+  google.protobuf.Int64Value color = 3;
+  FontStyle fontStyle = 4;
+  google.protobuf.Int32Value fontWeight = 5;
+  PbUiUnit letterSpacing = 6;
+  repeated TextDecoration textDecoration = 7;
+  TextAlign textAlign = 8;
+  PbUiUnit lineHeight = 9;
+  TextOverflow overflow = 10;
+  google.protobuf.BoolValue softWrap = 11;
+  google.protobuf.Int32Value maxLines = 12;
+  google.protobuf.StringValue clickUrl = 13;
+  enum FontStyle{
+    Normal = 0;
+    Italic = 1;
+  }
+  enum TextDecoration{
+    None = 0;
+    Underline = 1;
+    LineThrough = 2;
+  }
+  enum TextAlign{
+    Left = 0;
+    Right = 1;
+    Center = 2;
+    Justify = 3;
+    Start = 4;
+    End = 5;
+  }
+  enum TextOverflow{
+    Clip = 0;
+    Ellipsis = 1;
+  }
+}
+
+message PbImage{
+  string url = 1;
+  google.protobuf.StringValue clickUrl = 2;
+}
+
+message PbBox{
+  repeated PbChild children = 3;
+}
+
+message PbFlow{
+  repeated PbChild children = 3;
+}
+
+message PbConstraint{
+  repeated PbChild children = 3;
+}
+
+message PbSpace{
+
+}
+
+//
+
+message PbUiUnit{
+  float value = 1;
+  Type type = 2;
+  enum Type{
+    Px = 0;
+    Dp = 1;
+    Sp = 2;
+  }
+}
+
+message PbPadding{
+  PbUiUnit start = 1;
+  PbUiUnit top = 2;
+  PbUiUnit right = 3;
+  PbUiUnit end = 4;
+}
+
+
+
+
+

@@ -1,0 +1,11 @@
+dependencyResolutionManagement {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+}
+rootProject.name = "accelerator"
+include ':app'
+include ':accelerator'
+include ':accelerator-mappings-generator'
