@@ -126,7 +126,7 @@ class AcceleratorView @JvmOverloads constructor(
 
     companion object {
         private val workers = ThreadPoolExecutor(
-            2,
+            0,
             Runtime.getRuntime().availableProcessors(),
             60,
             TimeUnit.SECONDS,
