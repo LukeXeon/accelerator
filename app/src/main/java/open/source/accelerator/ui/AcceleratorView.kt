@@ -135,7 +135,7 @@ class AcceleratorView @JvmOverloads constructor(
                 private val counter = AtomicLong()
                 override fun newThread(r: Runnable?): Thread {
                     return Thread {
-                        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND)
                         r?.run()
                     }.apply {
                         name = "accelerator-thread-${counter.incrementAndGet()}"
