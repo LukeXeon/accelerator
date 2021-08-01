@@ -6,7 +6,12 @@ option java_package = "open.source.accelerator.proto";
 option java_generate_equals_and_hash = true;
 package open.source.accelerator.proto;
 
-message PbChildContent{
+message PbTemplate{
+  int32 version = 1;
+  PbRenderNode root = 2;
+}
+
+message PbRenderNode{
   oneof value{
     PbRow row = 1;
     PbColumn column = 2;
@@ -26,7 +31,7 @@ message PbRow{
   google.protobuf.StringValue clickUrl = 4;
   message Child{
     google.protobuf.FloatValue weight = 1;
-    PbChildContent content = 2;
+    PbRenderNode content = 2;
     PbAlignment.Vertical align = 3;
   }
 }
@@ -36,7 +41,7 @@ message PbColumn{
   google.protobuf.StringValue clickUrl = 4;
   message Child{
     google.protobuf.FloatValue weight = 1;
-    PbChildContent content = 2;
+    PbRenderNode content = 2;
     PbAlignment.Horizontal align = 3;
   }
 }
@@ -86,7 +91,7 @@ message PbImage{
 message PbBox{
   repeated Child children = 3;
   message Child{
-    PbChildContent content = 2;
+    PbRenderNode content = 2;
     google.protobuf.BoolValue matchParentSize = 1;
     PbAlignment align = 3;
   }
@@ -95,14 +100,14 @@ message PbBox{
 message PbFlow{
   repeated Child children = 3;
   message Child{
-    PbChildContent content = 2;
+    PbRenderNode content = 2;
   }
 }
 
 message PbConstraint{
   repeated Child children = 3;
   message Child{
-    PbChildContent content = 2;
+    PbRenderNode content = 2;
   }
 }
 

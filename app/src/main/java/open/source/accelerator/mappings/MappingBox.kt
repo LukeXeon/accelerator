@@ -3,9 +3,7 @@ package open.source.accelerator.mappings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import open.source.accelerator.proto.PbAlignment
 import open.source.accelerator.proto.PbBox
 
 private fun Modifier.apply(scope: BoxScope, child: PbBox.Child): Modifier {
@@ -25,7 +23,7 @@ fun MappingBox(descriptor: PbBox, modifier: Modifier) {
     Box(modifier = modifier) {
         descriptor.childrenList.forEach { child ->
             if (child.hasContent()) {
-                MappingChild(
+                MappingRenderNode(
                     descriptor = child.content,
                     modifier = Modifier.apply(this, child)
                 )
