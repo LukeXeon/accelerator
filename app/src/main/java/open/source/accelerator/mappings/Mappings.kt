@@ -2,7 +2,6 @@ package open.source.accelerator.mappings
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientDensity
@@ -11,7 +10,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.protobuf.Int64Value
 import com.google.protobuf.MessageLite
-import open.source.accelerator.proto.*
+import open.source.accelerator.proto.PbAlignment
+import open.source.accelerator.proto.PbPadding
+import open.source.accelerator.proto.PbUiUnit
 
 @Composable
 fun PbUiUnit.toUnit(): Dp {
@@ -74,12 +75,13 @@ fun PbAlignment.Vertical.toVertical(): Alignment.Vertical {
 }
 
 @Composable
-fun <T : MessageLite> Map<Int, T>.toChildren(): List<T> {
-    val list = remember { ArrayList<T>() }
-    list.clear()
-    for (i in 0 until size) {
-        list.add(getValue(i))
+inline fun <T : MessageLite> RenderChildren(
+    children: Map<Int, T>,
+    content: @Composable (T) -> Unit
+) {
+    @Suppress("ReplaceManualRangeWithIndicesCalls")
+    for (i in 0 until children.size) {
+        content(children.getValue(i))
     }
-    return list
 }
 

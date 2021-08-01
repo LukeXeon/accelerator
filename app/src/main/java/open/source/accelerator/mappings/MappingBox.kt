@@ -21,7 +21,7 @@ private fun Modifier.apply(scope: BoxScope, child: PbBox.Child): Modifier {
 @Composable
 fun MappingBox(descriptor: PbBox, modifier: Modifier) {
     Box(modifier = modifier) {
-        descriptor.childrenMap.toChildren().forEach { child ->
+        RenderChildren(children = descriptor.childrenMap) { child ->
             if (child.hasContent()) {
                 MappingNode(
                     descriptor = child.content,

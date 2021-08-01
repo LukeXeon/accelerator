@@ -23,7 +23,7 @@ private fun Modifier.apply(scope: RowScope, attr: PbRow.Child): Modifier {
 @Composable
 fun MappingRow(descriptor: PbRow, modifier: Modifier) {
     Row(modifier = modifier) {
-        descriptor.childrenMap.toChildren().forEach {
+        RenderChildren(children = descriptor.childrenMap) {
             if (it.hasContent()) {
                 MappingNode(
                     descriptor = it.content,
