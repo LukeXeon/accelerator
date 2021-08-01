@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.math.max
 
 
 class AcceleratorView @JvmOverloads constructor(
@@ -126,8 +127,8 @@ class AcceleratorView @JvmOverloads constructor(
 
     companion object {
         private val workers = ThreadPoolExecutor(
-            0,
-            Runtime.getRuntime().availableProcessors(),
+            2,
+            max(Runtime.getRuntime().availableProcessors(), 2),
             60,
             TimeUnit.SECONDS,
             LinkedBlockingQueue(),
