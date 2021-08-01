@@ -8,3 +8,5 @@ dependencyResolutionManagement {
 rootProject.name = "accelerator"
 include ':app'
 include ':accelerator'
+include ':accelerator-diff'
+include ':accelerator-proto'
