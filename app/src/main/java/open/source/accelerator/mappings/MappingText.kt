@@ -119,11 +119,13 @@ fun MappingText(descriptor: PbText, modifier: Modifier) {
             descriptor.maxLines.value
         else
             Int.MAX_VALUE,
-        modifier = Modifier.apply {
+        modifier = modifier.let {
             if (descriptor.hasClickUrl()) {
-                clickable {
+                it.clickable {
                     onClick(descriptor.clickUrl.value)
                 }
+            } else {
+                it
             }
         }
     )

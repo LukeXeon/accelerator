@@ -25,7 +25,7 @@ fun MappingColumn(descriptor: PbColumn, modifier: Modifier) {
     Column(modifier = modifier) {
         descriptor.childrenList.forEach { child ->
             if (child.hasContent()) {
-                MappingRenderNode(
+                MappingNode(
                     descriptor = child.content,
                     modifier = Modifier.apply(this, child)
                 )

@@ -1,5 +1,8 @@
 package open.source.accelerator
 
+import open.source.accelerator.proto.PbColumn
+import open.source.accelerator.proto.PbRenderNode
+import open.source.accelerator.proto.PbText
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +15,8 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
+        PbColumn.newBuilder()
+            .build()
         assertEquals(4, 2 + 2)
     }
 }

@@ -25,7 +25,7 @@ fun MappingRow(descriptor: PbRow, modifier: Modifier) {
     Row(modifier = modifier) {
         descriptor.childrenList.forEach {
             if (it.hasContent()) {
-                MappingRenderNode(
+                MappingNode(
                     descriptor = it.content,
                     modifier = Modifier.apply(this, it)
                 )

@@ -23,7 +23,7 @@ fun MappingBox(descriptor: PbBox, modifier: Modifier) {
     Box(modifier = modifier) {
         descriptor.childrenList.forEach { child ->
             if (child.hasContent()) {
-                MappingRenderNode(
+                MappingNode(
                     descriptor = child.content,
                     modifier = Modifier.apply(this, child)
                 )
