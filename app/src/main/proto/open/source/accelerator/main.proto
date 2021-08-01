@@ -28,7 +28,8 @@ message PbNode{
 //
 
 message PbRow{
-  repeated Child children = 3;
+  // merge和diff逻辑需要
+  map<int32, Child> children = 3;
   google.protobuf.StringValue clickUrl = 4;
   message Child{
     google.protobuf.FloatValue weight = 1;
@@ -38,7 +39,7 @@ message PbRow{
 }
 
 message PbColumn{
-  repeated Child children = 3;
+  map<int32, Child> children = 3;
   google.protobuf.StringValue clickUrl = 4;
   message Child{
     google.protobuf.FloatValue weight = 1;
@@ -90,7 +91,7 @@ message PbImage{
 }
 
 message PbBox{
-  repeated Child children = 3;
+  map<int32, Child> children = 3;
   message Child{
     PbNode content = 2;
     google.protobuf.BoolValue matchParentSize = 1;
@@ -99,14 +100,14 @@ message PbBox{
 }
 
 message PbFlow{
-  repeated Child children = 3;
+  map<int32, Child> children = 3;
   message Child{
     PbNode content = 2;
   }
 }
 
 message PbConstraint{
-  repeated Child children = 3;
+  map<int32, Child> children = 3;
   message Child{
     PbNode content = 2;
   }

@@ -30,13 +30,12 @@ class AcceleratorView @JvmOverloads constructor(
     override fun Content() {
         var completeNode by remember { mutableStateOf<PbNode?>(null) }
         DisposableEffect(templateNode, diffNode) {
-            val tNode = templateNode
+            val template = templateNode
             val diff = diffNode
-            if (tNode != null && diff != null) {
+            if (template != null && diff != null) {
                 workers.execute(object : SimpleAsyncTask<PbNode>() {
                     override fun doBackground(): PbNode {
-                        return tNode
-                            .toBuilder()
+                        return template.toBuilder()
                             .mergeFrom(diff)
                             .build()
                     }
@@ -61,7 +60,7 @@ class AcceleratorView @JvmOverloads constructor(
             }
 
             override fun onResult(value: PbNode) {
-                templateNode = value
+                diffNode = value
             }
         })
     }

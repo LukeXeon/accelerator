@@ -23,7 +23,7 @@ private fun Modifier.apply(scope: ColumnScope, attr: PbColumn.Child): Modifier {
 @Composable
 fun MappingColumn(descriptor: PbColumn, modifier: Modifier) {
     Column(modifier = modifier) {
-        descriptor.childrenList.forEach { child ->
+        descriptor.childrenMap.toChildren().forEach { child ->
             if (child.hasContent()) {
                 MappingNode(
                     descriptor = child.content,

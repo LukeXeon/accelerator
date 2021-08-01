@@ -2,6 +2,7 @@ package open.source.accelerator.mappings
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientDensity
@@ -9,9 +10,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.protobuf.Int64Value
-import open.source.accelerator.proto.PbAlignment
-import open.source.accelerator.proto.PbPadding
-import open.source.accelerator.proto.PbUiUnit
+import com.google.protobuf.MessageLite
+import open.source.accelerator.proto.*
 
 @Composable
 fun PbUiUnit.toUnit(): Dp {
@@ -38,7 +38,6 @@ fun PbPadding.toPaddingValues(): PaddingValues {
 fun Int64Value.toColor(): Color {
     return Color(value)
 }
-
 
 fun PbAlignment.toAlignment(): Alignment {
     val align = this
@@ -72,5 +71,15 @@ fun PbAlignment.Vertical.toVertical(): Alignment.Vertical {
         PbAlignment.Vertical.Bottom -> Alignment.Bottom
         else -> Alignment.Top
     }
+}
+
+@Composable
+fun <T : MessageLite> Map<Int, T>.toChildren(): List<T> {
+    val list = remember { ArrayList<T>() }
+    list.clear()
+    for (i in 0 until size) {
+        list.add(getValue(i))
+    }
+    return list
 }
 
