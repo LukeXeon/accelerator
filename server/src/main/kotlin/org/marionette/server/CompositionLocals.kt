@@ -6,15 +6,10 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.kotlin.AbstractCoroutineStub
-import java.nio.file.FileSystem
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.typeOf
 
-
-val LocalRemoteFileSystem = staticCompositionLocalOf<FileSystem> {
-    error("No default file system")
-}
 
 val LocalRpcChannel = staticCompositionLocalOf<Channel> {
     error("No default channel")
@@ -30,11 +25,10 @@ fun <T : AbstractCoroutineStub<T>> CoroutineStub(
     return remember(channel, create, options) { create(channel, options) }
 }
 
-fun <T : Any> findConstructor(type: KClass<T>): KFunction<T> {
+fun <T : AbstractCoroutineStub<T>> findConstructor(type: KClass<T>): KFunction<T> {
     return type.constructors.find {
-        it.parameters.size == 2
-                && it.parameters[0] == typeOf<Channel>()
-                && it.parameters[1] == typeOf<CallOptions>()
+        it.parameters.size == 2 && it.parameters[0].type == typeOf<Channel>()
+                && it.parameters[1].type == typeOf<CallOptions>()
     } ?: throw AssertionError()
 }
 

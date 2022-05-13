@@ -18,8 +18,9 @@ fun Test() {
             }).value) {
             files.open(fileOpenOptions {
                 path = ""
-            })
+            }).collect {
 
+            }
         }
 
 
