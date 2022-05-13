@@ -1,0 +1,72 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'com.google.protobuf'
+}
+
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.20.1'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.45.1'
+        }
+        grpckt {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.2.1:jdk7@jar"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java { option 'lite' }
+                kotlin { option 'lite' }
+            }
+            task.plugins {
+                grpc { option 'lite' }
+                grpckt { option 'lite' }
+            }
+        }
+    }
+}
+
+
+sourceSets {
+    main {
+        proto {
+            // In addition to the default 'src/main/proto'
+            srcDir 'src/main/protobuf'
+            srcDir 'src/main/protocolbuffers'
+            // In addition to the default '**/*.proto' (use with caution).
+            // Using an extension other than 'proto' is NOT recommended,
+            // because when proto files are published along with class files, we can
+            // only tell the type of a file from its extension.
+            include '**/*.protodevel'
+        }
+    }
+    test {
+        proto {
+            // In addition to the default 'src/test/proto'
+            srcDir 'src/test/protocolbuffers'
+        }
+    }
+}
+
+
+dependencies {
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
+    api 'io.grpc:grpc-kotlin-stub:1.2.1'
+    api 'io.grpc:grpc-core:1.46.0'
+    api 'io.grpc:grpc-protobuf-lite:1.46.0'
+    api 'io.grpc:grpc-stub:1.45.1'
+    api 'com.google.protobuf:protobuf-kotlin-lite:3.20.1'
+    api 'com.google.protobuf:protobuf-javalite:3.20.1'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

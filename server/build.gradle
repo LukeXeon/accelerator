@@ -1,0 +1,34 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'org.jetbrains.compose'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = ["-Xinline-classes", '-Xopt-in=kotlin.RequiresOptIn']
+    }
+}
+
+
+dependencies {
+    // https://mvnrepository.com/artifact/io.grpc/grpc-core
+    implementation 'io.grpc:grpc-core:1.46.0'
+    implementation 'org.brotli:dec:0.1.2'
+    implementation 'org.brotli:parent:0.1.2'
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.collection:collection:1.2.0'
+    implementation 'org.jetbrains.compose.runtime:runtime:1.1.1'
+    implementation 'org.jetbrains.compose.ui:ui-unit:1.1.1'
+    implementation 'org.jetbrains.compose.ui:ui-graphics:1.1.1'
+    implementation "io.ktor:ktor-server-core:2.0.1"
+    implementation 'io.ktor:ktor-server-websockets:2.0.1'
+    implementation project(':proto')
+}

@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package org.marionette.proto.types;
+
+option java_multiple_files = true;
+
+message Background {
+  oneof kind {
+    int32 color = 1;
+    Image image = 2;
+  }
+  message Image {
+    string url = 1;
+    ContentScale contentScale = 2;
+  }
+}
+
+enum ContentScale {
+  ContentScale_Crop = 0;
+  ContentScale_Fit = 1;
+  ContentScale_FillBounds = 2;
+}
+
+enum Visibility {
+  /** The node is visible (the default). */
+  Visibility_Visible = 0;
+
+  /** The node is invisible, but still uses the space in the layout. */
+  Visibility_Invisible = 1;
+
+  /** The node is invisible, and doesn't use any space, as if removed. */
+  Visibility_Gone = 2;
+}
+
+
+message Padding {
+  float left = 1;
+  float start = 2;
+  float top = 3;
+  float right = 4;
+  float end = 5;
+  float bottom = 6;
+}
+
+message Dimension {
+  oneof kind {
+    float dp = 1;
+    Kind type = 2;
+  }
+  enum Kind {
+    Dimension_Wrap = 0;
+    Dimension_Fill = 1;
+    Dimension_Expand = 2;
+  }
+}
+
+message TextUnit {
+  float value = 1;
+  Type type = 2;
+  enum Type {
+    TextUnit_Type_Em = 0;
+    TextUnit_Type_Sp = 1;
+  }
+}
+
+enum TextAlign {
+  TextAlign_Left = 0;
+  TextAlign_Right = 1;
+  TextAlign_Center = 2;
+  TextAlign_Start = 3;
+  TextAlign_End = 4;
+}
+
+enum FontWeight {
+  FontWeight_Normal = 0;
+  FontWeight_Medium = 1;
+  FontWeight_Bold = 2;
+}
+
+enum FontStyle {
+  /** Use the upright glyphs */
+  FontStyle_Normal = 0;
+
+  /** Use glyphs designed for slanting */
+  FontStyle_Italic = 1;
+}
+
+enum Horizontal {
+  Horizontal_Start = 0;
+  Horizontal_CenterHorizontally = 1;
+  Horizontal_End = 2;
+}
+
+enum Vertical {
+  Vertical_Top = 0;
+  Vertical_CenterVertically = 1;
+  Vertical_Bottom = 2;
+}

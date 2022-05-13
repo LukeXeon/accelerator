@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package org.marionette.proto;
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+
+message NodeEvent {
+  int32 nodeId = 1;
+  string name = 2;
+  repeated EventArg arg = 3;
+  message EventArg {
+    oneof kind {
+      bytes data = 1;
+      google.protobuf.Empty empty = 2;
+    }
+  }
+}
+
+message NodeUpdate {
+  int32 nodeId = 1;
+  message Field {
+    int32 id = 1;
+    oneof kind {
+      bytes data = 2;
+      google.protobuf.Empty empty = 3;
+    }
+  }
+  repeated Field data = 2;
+  message ChildAction {
+    message Insert {
+      int32 index = 1;
+      string type = 2;
+      int32 nodeId = 3;
+    }
+    message Remove {
+      int32 index = 1;
+      int32 count = 2;
+    }
+
+    message Move {
+      int32 from = 1;
+      int32 to = 2;
+      int32 count = 3;
+    }
+    oneof kind {
+      Insert insert = 3;
+      Remove remove = 4;
+      Move move = 5;
+    }
+  }
+  repeated ChildAction childAction = 3;
+}
+
+message NodeUpdateList {
+  repeated NodeUpdate update = 1;
+}
+
+message Message {
+  oneof channel {
+    NodeUpdateList updates = 1;
+    NodeEvent event = 2;
+    bytes stream = 3;
+  }
+}

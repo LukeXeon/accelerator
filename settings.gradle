@@ -1,12 +1,11 @@
 dependencyResolutionManagement {
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 }
 rootProject.name = "accelerator"
 include ':app'
-include ':accelerator'
-include ':accelerator-diff'
-include ':accelerator-proto'
+include ':client'
+include ':server'
+include ':proto'

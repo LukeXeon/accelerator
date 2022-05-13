@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package org.marionette.proto.rpc;
+
+option java_multiple_files = true;
+
+import "google/protobuf/wrappers.proto";
+
+message FileOpenOptions {
+  string path = 1;
+}
+
+service Files {
+  rpc open(FileOpenOptions) returns (stream google.protobuf.BytesValue){}
+}
+
+enum PermissionType {
+  PermissionType_File = 0;
+}
+
+message RequestPermissionOptions {
+  PermissionType type = 1;
+}
+
+service Permissions {
+  rpc request(RequestPermissionOptions) returns (google.protobuf.BoolValue){}
+}
+
+
