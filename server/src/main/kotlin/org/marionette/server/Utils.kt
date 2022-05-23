@@ -2,6 +2,9 @@ package org.marionette.server
 
 import androidx.annotation.RestrictTo
 import androidx.collection.SparseArrayCompat
+import com.google.protobuf.ByteString
+import io.grpc.InternalMetadata
+import io.grpc.Metadata
 
 /*
  * Copyright 2021 The Android Open Source Project
@@ -29,26 +32,6 @@ inline fun <reified T : Modifier.Element> Modifier.findModifier(): T? =
             acc
         }
     }
-
-/**
- * Find the last modifier of the given type, and create a new [Modifier] which is equivalent
- * with the previous one, but without any modifiers of specified type.
- * @suppress
- */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-inline fun <reified T : Modifier.Element> Modifier.extractModifier(): Pair<T?, Modifier> =
-    if (any { it is T }) {
-        foldIn<Pair<T?, Modifier>>(null to Modifier) { acc, cur ->
-            if (cur is T) {
-                cur to acc.second
-            } else {
-                acc.first to acc.second.then(cur)
-            }
-        }
-    } else {
-        null to this
-    }
-
 
 inline fun <T, R> SparseArrayCompat<T>.map(transform: (Int, T) -> R): List<R> {
     return (0 until size()).map {
@@ -111,4 +94,16 @@ fun <T> MutableList<T>.move(
     }
 }
 
+fun <T> SparseArrayCompat<T>.removeKey(key: Int): T? {
+    val value = this[key]
+    this.remove(key)
+    return value
+}
 
+internal fun List<ByteString>.toMetadata(): Metadata {
+    return InternalMetadata.newMetadata(*map { bs -> bs.toByteArray() }.toTypedArray())
+}
+
+internal fun Metadata.toByteStringList(): List<ByteString> {
+    return InternalMetadata.serialize(this).map { ByteString.copyFrom(it) }
+}

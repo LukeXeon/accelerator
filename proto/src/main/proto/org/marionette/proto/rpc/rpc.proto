@@ -5,6 +5,7 @@ package org.marionette.proto.rpc;
 option java_multiple_files = true;
 
 import "google/protobuf/wrappers.proto";
+import "org/marionette/proto/protocol.proto";
 
 message FileOpenOptions {
   string path = 1;
@@ -24,6 +25,10 @@ message RequestPermissionOptions {
 
 service Permissions {
   rpc request(RequestPermissionOptions) returns (google.protobuf.BoolValue){}
+}
+
+service Dialog {
+  rpc create(stream NodeUpdateList) returns (stream NodeEvent){}
 }
 
 

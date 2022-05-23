@@ -5,7 +5,7 @@ import org.marionette.proto.node.INode
 import org.marionette.server.RemoteUpdater
 import org.marionette.server.vnode.VNode.Companion.vNode
 
-class VRoot(val rootUpdater: RemoteUpdater) : VParent {
+internal class VRoot(val rootUpdater: RemoteUpdater) : VParent {
     override val children = ArrayList<INode>()
     fun commit() {
         rootUpdater.commit()

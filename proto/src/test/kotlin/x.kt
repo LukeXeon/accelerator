@@ -1,7 +1,14 @@
-import org.marionette.proto.node.INode
-import kotlin.reflect.KClass
+import kotlinx.coroutines.*
 
 fun main(args: Array<String>) {
-    val x: () -> Unit = {}
 
+    runBlocking {
+        var job: Job? = null
+        job = GlobalScope.launch {
+            delay(1000)
+            println("asdasdad")
+        }
+        delay(1500)
+        job.cancelAndJoin()
+    }
 }

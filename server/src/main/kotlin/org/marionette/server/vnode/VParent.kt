@@ -5,7 +5,7 @@ import org.marionette.server.move
 import org.marionette.server.remove
 import org.marionette.server.vnode.VNode.Companion.vNode
 
-interface VParent {
+internal interface VParent {
     val children: MutableList<INode>
 
     fun move(from: Int, to: Int, count: Int) {

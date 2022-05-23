@@ -1,22 +1,27 @@
 package org.marionette.server.vnode
 
 import com.google.protobuf.*
+import java.lang.reflect.Method
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.isSuperclassOf
 
-class VEventHandler(
+internal class VEventHandler(
     private val function: KFunction<*>,
     private val types: List<KClass<*>>
 ) : (List<ByteString>) -> Unit {
 
     override fun invoke(input: List<ByteString>) {
-        function.call(types.mapIndexed { index, type ->
-            val bytes = input[index]
+        if (input.size != types.size) {
+            throw IllegalArgumentException()
+        }
+        function.call((input.indices).asSequence().map {
+            types[it] to input[it]
+        }.map { (type, bytes) ->
             if (bytes == ByteString.EMPTY) {
-                return@mapIndexed null
+                return@map null
             }
-            return@mapIndexed when {
+            return@map when {
                 type == ByteArray::class -> {
                     bytes.toByteArray()
                 }
@@ -61,18 +66,15 @@ class VEventHandler(
     }
 
     companion object {
-        private val sParseFromTable = HashMap<Class<*>, (ByteString) -> MessageLite>()
+        private val sParseFromTable = HashMap<Class<*>, Method>()
 
-        private fun getParseFrom(type: Class<*>): (ByteString) -> MessageLite {
+        private fun getParseFrom(type: Class<*>): Method {
             return synchronized(sParseFromTable) {
                 sParseFromTable.getOrPut(type) {
-                    val m = type.getMethod(
+                    type.getMethod(
                         "parseFrom",
                         ByteString::class.java
                     )
-                    return@getOrPut { data ->
-                        m.invoke(null, data) as MessageLite
-                    }
                 }
             }
         }

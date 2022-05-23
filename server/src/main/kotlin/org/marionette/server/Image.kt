@@ -38,7 +38,7 @@ import org.marionette.server.vnode.VNode
 @Composable
 fun Image(
     url: String?,
-    contentDescription: String?,
+    contentDescription: String? = null,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.ContentScale_Fit,
 ) {

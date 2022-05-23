@@ -9,10 +9,11 @@ message Background {
     int32 color = 1;
     Image image = 2;
   }
-  message Image {
-    string url = 1;
-    ContentScale contentScale = 2;
-  }
+}
+
+message Image {
+  string url = 1;
+  ContentScale contentScale = 2;
 }
 
 enum ContentScale {
@@ -32,7 +33,6 @@ enum Visibility {
   Visibility_Gone = 2;
 }
 
-
 message Padding {
   float left = 1;
   float start = 2;
@@ -42,25 +42,27 @@ message Padding {
   float bottom = 6;
 }
 
+enum DimensionKind {
+  Dimension_Wrap = 0;
+  Dimension_Fill = 1;
+  Dimension_Expand = 2;
+}
+
 message Dimension {
   oneof kind {
     float dp = 1;
-    Kind type = 2;
+    DimensionKind value = 2;
   }
-  enum Kind {
-    Dimension_Wrap = 0;
-    Dimension_Fill = 1;
-    Dimension_Expand = 2;
-  }
+}
+
+enum TextUnitType {
+  TextUnitType_Em = 0;
+  TextUnitType_Sp = 1;
 }
 
 message TextUnit {
   float value = 1;
-  Type type = 2;
-  enum Type {
-    TextUnit_Type_Em = 0;
-    TextUnit_Type_Sp = 1;
-  }
+  TextUnitType type = 2;
 }
 
 enum TextAlign {

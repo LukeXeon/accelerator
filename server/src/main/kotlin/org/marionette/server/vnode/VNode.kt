@@ -1,5 +1,6 @@
 package org.marionette.server.vnode
 
+import androidx.collection.ArrayMap
 import androidx.collection.SparseArrayCompat
 import com.google.protobuf.*
 import org.marionette.proto.NodeEvent
@@ -10,10 +11,17 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.full.isSupertypeOf
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
+import kotlin.reflect.jvm.javaSetter
 import kotlin.reflect.jvm.reflect
+import kotlin.reflect.typeOf
 
-sealed class VNode private constructor(val name: String) {
+internal sealed class VNode private constructor(val name: String) {
 
     val nodeId = generateViewId()
 
@@ -21,7 +29,7 @@ sealed class VNode private constructor(val name: String) {
 
     abstract fun dispatch(event: NodeEvent): Boolean
 
-    open class VLeaf(name: String) : VNode(name), InvocationHandler {
+    private open class VLeaf(name: String) : VNode(name), InvocationHandler {
         protected val rootUpdater: RemoteUpdater
             get() {
                 val instance = updater
@@ -51,7 +59,7 @@ sealed class VNode private constructor(val name: String) {
 
         override fun dispatch(event: NodeEvent): Boolean {
             return if (event.nodeId == nodeId) {
-                events[0]?.invoke(event.argList.map {
+                events[event.eventId]?.invoke(event.argList.map {
                     if (it.kindCase == NodeEvent.EventArg.KindCase.DATA) {
                         it.data
                     } else {
@@ -69,21 +77,18 @@ sealed class VNode private constructor(val name: String) {
             if (method.isDefault) {
                 return method.invoke(this, args)
             }
-            val index = VIndexer[obj.javaClass, method]
+            val index = Companion[obj.javaClass, method]
             if (index != null) {
                 val arg = args[0]
                 val bytes = when {
                     arg == null -> {
-                        if (index is VIndexer.EventIndex) {
+                        if (index.eventTypes != null) {
                             events.remove(index.value)
                         }
                         ByteString.EMPTY
                     }
-                    index is VIndexer.EventIndex -> {
-                        val types = index.types
-                        if (arg !is Function<*>) {
-                            throw UnsupportedOperationException()
-                        }
+                    arg is Function<*> && index.eventTypes != null -> {
+                        val types = index.eventTypes
                         val function = arg.reflect() ?: throw UnsupportedOperationException()
                         events[index.value] = VEventHandler(function, types)
                         boolValue {
@@ -148,7 +153,7 @@ sealed class VNode private constructor(val name: String) {
         }
     }
 
-    class VGroup(name: String) : VLeaf(name), VParent {
+    private class VGroup(name: String) : VLeaf(name), VParent {
         override val children = ArrayList<INode>()
 
         override fun dispatch(event: NodeEvent): Boolean {
@@ -176,9 +181,30 @@ sealed class VNode private constructor(val name: String) {
         }
     }
 
+    private class VIndex(
+        val value: Int,
+        val eventTypes: List<KClass<*>>? = null
+    )
+
     companion object {
 
         private val sNextGeneratedId = AtomicInteger(1)
+
+        private val sSupportTypes = listOf(
+            ByteArray::class,
+            Boolean::class,
+            Byte::class,
+            Char::class,
+            Short::class,
+            Int::class,
+            Long::class,
+            Float::class,
+            Double::class,
+            Enum::class,
+            MessageLite::class
+        )
+
+        private val sIndexTable = ArrayMap<Class<*>, Map<Method, VIndex>>()
 
         private fun generateViewId(): Int {
             while (true) {
@@ -193,20 +219,89 @@ sealed class VNode private constructor(val name: String) {
             }
         }
 
+        private fun indexing(type: Class<*>) {
+            synchronized(sIndexTable) {
+                if (!sIndexTable.containsKey(type)) {
+                    val map = ArrayMap<Method, VIndex>()
+                    type.kotlin.memberProperties.asSequence()
+                        .mapNotNull {
+                            it as? KMutableProperty<*>
+                        }.sortedBy {
+                            it.name
+                        }.forEachIndexed { index, kMutableProperty ->
+                            val method = kMutableProperty.javaSetter
+                            if (method != null) {
+                                val propertyType = kMutableProperty.returnType
+                                if (propertyType.isSupertypeOf(typeOf<Function<Unit>>())) {
+                                    var arguments = propertyType.arguments
+                                    arguments = arguments.subList(0, arguments.size - 1)
+                                    if (arguments.asSequence().map { it.type }
+                                            .all {
+                                                if (it != null && it.arguments.isEmpty()) {
+                                                    val classifier = it.classifier
+                                                    if (classifier is KClass<*> && classifier.isSupportType) {
+                                                        return@all true
+                                                    }
+                                                }
+                                                return@all false
+                                            }
+                                    ) {
+                                        map[method] = VIndex(
+                                            index,
+                                            arguments.mapNotNull { it.type?.classifier as? KClass<*> }
+                                        )
+                                        return@forEachIndexed
+                                    }
+                                } else if (propertyType.arguments.isEmpty()) {
+                                    val classifier = propertyType.classifier
+                                    if (classifier is KClass<*> && classifier.isSupportType) {
+                                        map[method] = VIndex(index)
+                                        return@forEachIndexed
+                                    }
+                                }
+                            }
+                            throw UnsupportedOperationException()
+                        }
+                }
+            }
+        }
+
+        private operator fun get(type: Class<*>, method: Method): VIndex? {
+            val table = synchronized(sIndexTable) {
+                sIndexTable.getValue(type)
+            }
+            return synchronized(table) {
+                table[method]
+            }
+        }
+
+        private val KClass<*>.isSupportType: Boolean
+            get() {
+                return sSupportTypes.any { it.isSuperclassOf(this) }
+            }
+
         val INode.vNode: VNode
             get() {
                 return Proxy.getInvocationHandler(this) as VNode
             }
 
+        fun create(
+            type: KClass<*>,
+            name: String,
+            isGroup: Boolean
+        ): Any {
+            return Proxy.newProxyInstance(
+                type.java.classLoader,
+                arrayOf(type.java),
+                if (isGroup) VGroup(name) else VLeaf(name)
+            ).apply { indexing(javaClass) }
+        }
+
         inline fun <reified N : INode> create(
             name: String,
             isGroup: Boolean = false
         ): N {
-            return Proxy.newProxyInstance(
-                N::class.java.classLoader,
-                arrayOf(N::class.java),
-                if (isGroup) VGroup(name) else VLeaf(name)
-            ).apply { VIndexer.indexing(javaClass) } as N
+            return create(N::class, name, isGroup) as N
         }
     }
 }

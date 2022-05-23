@@ -27,7 +27,7 @@ import org.marionette.server.vnode.VRoot
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class Applier(root: VRoot) : AbstractApplier<Any>(root) {
+internal class Applier(root: VRoot) : AbstractApplier<Any>(root) {
 
     override fun onClear() {
         (root as VRoot).clear()
